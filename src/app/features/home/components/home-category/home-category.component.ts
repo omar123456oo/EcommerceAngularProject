@@ -1,12 +1,11 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
 import { CategoriesService } from '../../../../core/services/categories.service';
 import { ICategory } from '../../../../core/models/api.interface';
 
 @Component({
   selector: 'app-home-category',
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule],
   templateUrl: './home-category.component.html',
   styleUrl: './home-category.component.css',
 })
