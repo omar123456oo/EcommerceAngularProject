@@ -1,0 +1,8 @@
+api docs 
+https://documenter.getpostman.com/view/5709532/2s93JqTRWN
+
+demo 
+https://freshcart-route.vercel.app/
+
+figma design 
+https://www.figma.com/design/7GOjynvDWj2Lnbb4IKjbXK/Freshcart---E-Commerce-?node-id=12-2477&t=VyvYqx4BgkarYq7W-0

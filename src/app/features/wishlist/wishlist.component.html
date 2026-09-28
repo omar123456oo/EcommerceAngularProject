@@ -1,0 +1,146 @@
+<div class="container py-10">
+
+  <!-- Breadcrumb -->
+  <div class="breadcrumb mb-8">
+    <a routerLink="/">Home</a>
+    <span>/</span>
+    <span class="active">Wishlist</span>
+  </div>
+
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-8">
+    <h2 class="text-xl font-semibold">Wishlist ({{ items().length }})</h2>
+    @if (items().length > 0) {
+      <a routerLink="/shop" class="px-8 py-3 border border-gray-300 rounded text-sm font-medium hover:border-exclusive hover:text-exclusive transition-colors">
+        Move All To Bag
+      </a>
+    }
+  </div>
+
+  @if (isLoading()) {
+    <div class="flex justify-center py-20">
+      <div class="animate-spin w-10 h-10 border-4 border-exclusive border-t-transparent rounded-full"></div>
+    </div>
+  } @else if (items().length === 0) {
+    <div class="text-center py-20">
+      <svg class="w-24 h-24 text-gray-200 mx-auto mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+      </svg>
+      <h2 class="text-2xl font-semibold mb-3">Your wishlist is empty</h2>
+      <p class="text-gray-500 mb-8">Save items you like to your wishlist to buy them later.</p>
+      <a routerLink="/shop" class="btn-exclusive">Continue Shopping</a>
+    </div>
+  } @else {
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+      @for (item of items(); track item._id) {
+        <div class="group">
+          <div class="product-card relative">
+            <!-- Remove button -->
+            <button (click)="removeItem(item._id!)"
+              class="absolute top-3 right-3 z-10 w-8 h-8 bg-exclusive text-white rounded-full flex items-center justify-center hover:bg-red-700 transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
+
+            <a [routerLink]="['/product', item._id]">
+              <div class="bg-[#f5f5f5] rounded p-4 h-52 flex items-center justify-center">
+                <img [src]="item.imageCover" [alt]="item.title"
+                  class="max-h-44 object-contain w-full transition-transform duration-300 group-hover:scale-105"
+                  onerror="this.src='https://placehold.co/200x200/f5f5f5/ccc?text=Product'"/>
+              </div>
+            </a>
+
+            <!-- Add to Cart Button -->
+            <button (click)="addToCart(item._id!)"
+              [disabled]="loadingCartIds().has(item._id!)"
+              class="product-card-add-cart opacity-100 static py-3 w-full bg-black text-white text-sm hover:bg-exclusive transition-colors">
+              {{ loadingCartIds().has(item._id!) ? 'Adding...' : 'Add To Cart' }}
+            </button>
+          </div>
+
+          <div class="mt-3">
+            <a [routerLink]="['/product', item._id]" class="text-sm font-medium text-black hover:text-exclusive transition-colors block truncate">
+              {{ item.title }}
+            </a>
+            <div class="flex items-center gap-2 mt-1">
+              <span class="text-exclusive font-semibold">${{ item.priceAfterDiscount || item.price }}</span>
+              @if (item.priceAfterDiscount) {
+                <span class="text-gray-400 text-sm line-through">${{ item.price }}</span>
+              }
+            </div>
+            <div class="flex items-center gap-1 mt-1">
+              @for (star of [1,2,3,4,5]; track star) {
+                <svg class="w-3 h-3" [class.text-yellow-400]="star <= Math.round(item.ratingsAverage || 0)" [class.text-gray-200]="star > Math.round(item.ratingsAverage || 0)" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                </svg>
+              }
+              <span class="text-xs text-gray-400">({{ item.ratingsQuantity }})</span>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Just For You -->
+  <div class="mt-20">
+    <div class="flex items-center justify-between mb-8">
+      <div class="section-tag mb-0">
+        <div class="section-tag-bar"></div>
+        <span class="section-tag-text">Just For You</span>
+      </div>
+      <a routerLink="/shop" class="px-8 py-3 border border-gray-300 rounded text-sm font-medium hover:border-exclusive hover:text-exclusive transition-colors">
+        See All
+      </a>
+    </div>
+
+    @if (isRecommendedLoading()) {
+      <div class="flex justify-center py-10">
+        <div class="animate-spin w-8 h-8 border-4 border-exclusive border-t-transparent rounded-full"></div>
+      </div>
+    } @else {
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+        @for (product of recommended(); track product._id) {
+          <div class="group">
+            <div class="product-card relative">
+              <a [routerLink]="['/product', product._id]">
+                <div class="bg-[#f5f5f5] rounded p-4 h-52 flex items-center justify-center">
+                  <img [src]="product.imageCover" [alt]="product.title"
+                    class="max-h-44 object-contain w-full transition-transform duration-300 group-hover:scale-105"
+                    onerror="this.src='https://placehold.co/200x200/f5f5f5/ccc?text=Product'"/>
+                </div>
+              </a>
+
+              <button (click)="addToCart(product._id!)"
+                [disabled]="loadingCartIds().has(product._id!)"
+                class="product-card-add-cart opacity-100 static py-3 w-full bg-black text-white text-sm hover:bg-exclusive transition-colors">
+                {{ loadingCartIds().has(product._id!) ? 'Adding...' : 'Add To Cart' }}
+              </button>
+            </div>
+
+            <div class="mt-3">
+              <a [routerLink]="['/product', product._id]" class="text-sm font-medium text-black hover:text-exclusive transition-colors block truncate">
+                {{ product.title }}
+              </a>
+              <div class="flex items-center gap-2 mt-1">
+                <span class="text-exclusive font-semibold">${{ product.priceAfterDiscount || product.price }}</span>
+                @if (product.priceAfterDiscount) {
+                  <span class="text-gray-400 text-sm line-through">${{ product.price }}</span>
+                }
+              </div>
+              <div class="flex items-center gap-1 mt-1">
+                @for (star of [1,2,3,4,5]; track star) {
+                  <svg class="w-3 h-3" [class.text-yellow-400]="star <= Math.round(product.ratingsAverage || 0)" [class.text-gray-200]="star > Math.round(product.ratingsAverage || 0)" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                  </svg>
+                }
+                <span class="text-xs text-gray-400">({{ product.ratingsQuantity }})</span>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

@@ -1,0 +1,123 @@
+<div class="min-h-screen flex">
+  <!-- Left Image -->
+  <div class="hidden lg:flex w-1/2 bg-[#CBE4E8] items-center justify-center">
+    <img src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=600&h=700&fit=crop"
+      alt="Shopping" class="max-h-[600px] object-contain"/>
+  </div>
+
+  <!-- Right Form -->
+  <div class="flex-1 flex items-center justify-center px-8 py-16">
+    <div class="w-full max-w-sm">
+      <h1 class="text-3xl font-semibold text-black mb-2 font-[Inter]">Create an account</h1>
+      <p class="text-gray-600 text-sm mb-8">Enter your details below</p>
+
+      <!-- Error -->
+      @if (serverError()) {
+        <div class="mb-4 p-3 bg-red-50 border border-red-200 rounded text-red-600 text-sm">
+          {{ serverError() }}
+        </div>
+      }
+
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="space-y-6">
+
+        <!-- Name -->
+        <div>
+          <input type="text" formControlName="name" placeholder="Name"
+            class="form-input-exclusive"/>
+          @if (nameCtrl.invalid && nameCtrl.touched) {
+            <p class="mt-1 text-xs text-exclusive">
+              @if (nameCtrl.hasError('required')) { Name is required }
+              @else if (nameCtrl.hasError('minlength')) { Minimum 3 characters }
+            </p>
+          }
+        </div>
+
+        <!-- Email -->
+        <div>
+          <input type="email" formControlName="email" placeholder="Email or Phone Number"
+            class="form-input-exclusive"/>
+          @if (emailCtrl.invalid && emailCtrl.touched) {
+            <p class="mt-1 text-xs text-exclusive">
+              @if (emailCtrl.hasError('required')) { Email is required }
+              @else if (emailCtrl.hasError('email')) { Please enter a valid email }
+            </p>
+          }
+        </div>
+
+        <!-- Phone -->
+        <div>
+          <input type="tel" formControlName="phone" placeholder="Phone Number"
+            class="form-input-exclusive"/>
+          @if (phoneCtrl.invalid && phoneCtrl.touched) {
+            <p class="mt-1 text-xs text-exclusive">
+              @if (phoneCtrl.hasError('required')) { Phone number is required }
+              @else { Invalid Egyptian phone number }
+            </p>
+          }
+        </div>
+
+        <!-- Password -->
+        <div class="relative">
+          <input [type]="showPassword() ? 'text' : 'password'" formControlName="password" placeholder="Password"
+            class="form-input-exclusive pr-10"/>
+          <button type="button" (click)="showPassword.update(v => !v)"
+            class="absolute right-0 bottom-2 text-gray-400">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+            </svg>
+          </button>
+          @if (passwordCtrl.invalid && passwordCtrl.touched) {
+            <p class="mt-1 text-xs text-exclusive">
+              @if (passwordCtrl.hasError('required')) { Password is required }
+              @else if (passwordCtrl.hasError('minlength')) { Minimum 6 characters }
+              @else if (passwordCtrl.hasError('pattern')) { Must include uppercase letter and number }
+            </p>
+          }
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="relative">
+          <input [type]="showRePassword() ? 'text' : 'password'" formControlName="rePassword" placeholder="Confirm Password"
+            class="form-input-exclusive pr-10"/>
+          <button type="button" (click)="showRePassword.update(v => !v)"
+            class="absolute right-0 bottom-2 text-gray-400">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+            </svg>
+          </button>
+          @if (rePasswordCtrl.invalid && rePasswordCtrl.touched) {
+            <p class="mt-1 text-xs text-exclusive">
+              @if (rePasswordCtrl.hasError('required')) { Please confirm your password }
+              @else if (rePasswordCtrl.hasError('passwordMismatch')) { Passwords do not match }
+            </p>
+          }
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" [disabled]="isLoading()"
+          class="btn-exclusive w-full py-3 disabled:opacity-60">
+          @if (isLoading()) { Creating Account... } @else { Create Account }
+        </button>
+
+        <!-- Google -->
+        <button type="button"
+          class="w-full py-3 border border-gray-300 rounded text-sm font-medium flex items-center justify-center gap-3 hover:bg-gray-50 transition-colors">
+          <svg class="w-5 h-5" viewBox="0 0 24 24">
+            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+          </svg>
+          Sign up with Google
+        </button>
+
+        <p class="text-center text-sm text-gray-600">
+          Already have account?
+          <a routerLink="/login" class="text-black font-semibold underline hover:text-exclusive transition-colors">Log in</a>
+        </p>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,73 @@
+<div class="flex border-b border-gray-200">
+  <!-- Left Category Sidebar -->
+  <div class="hidden lg:block w-64 shrink-0 border-r border-gray-200 py-4 pr-8">
+    <ul class="space-y-1">
+      @for (cat of categories(); track cat._id) {
+        <li>
+          <a routerLink="/shop" [queryParams]="{category: cat._id}"
+            class="category-sidebar-item text-sm flex items-center justify-between py-2 text-gray-700 hover:text-exclusive cursor-pointer">
+            <span>{{ cat.name }}</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </a>
+        </li>
+      }
+    </ul>
+  </div>
+
+  <!-- Main Slider -->
+  <div class="flex-1 relative overflow-hidden" style="min-height:340px; background:#000;">
+    <!-- Slides -->
+    @for (slide of slides; track slide.id; let i = $index) {
+      <div class="absolute inset-0 transition-opacity duration-700"
+        [class.opacity-100]="currentSlide() === i"
+        [class.opacity-0]="currentSlide() !== i">
+        <div class="flex items-center justify-between h-full px-12 py-8">
+          <div class="text-white max-w-xs">
+            <div class="flex items-center gap-3 mb-4">
+              <img [src]="slide.brandLogo" [alt]="slide.brand" class="h-10 brightness-0 invert" onerror="this.style.display='none'"/>
+              <span class="text-gray-300 text-sm">{{ slide.brand }}</span>
+            </div>
+            <h2 class="text-4xl font-bold leading-tight mb-4 font-[Inter]">{{ slide.title }}</h2>
+            <a routerLink="/shop"
+              class="inline-flex items-center gap-2 text-white font-semibold border-b border-white pb-0.5 hover:text-exclusive hover:border-exclusive transition-colors">
+              Shop Now
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+              </svg>
+            </a>
+          </div>
+          <div class="hidden md:block">
+            <img [src]="slide.image" [alt]="slide.title" class="max-h-72 object-contain" onerror="this.src='https://placehold.co/300x280/333/fff?text=Product'"/>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Dots -->
+    <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2">
+      @for (slide of slides; track slide.id; let i = $index) {
+        <button (click)="goToSlide(i)"
+          class="w-3 h-3 rounded-full transition-all"
+          [class.bg-exclusive]="currentSlide() === i"
+          [class.w-4]="currentSlide() === i"
+          [class.bg-white]="currentSlide() !== i"
+          [class.opacity-60]="currentSlide() !== i">
+        </button>
+      }
+    </div>
+
+    <!-- Navigation arrows -->
+    <button (click)="prevSlide()" class="absolute left-4 top-1/2 -translate-y-1/2 text-white hover:text-exclusive transition-colors">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+      </svg>
+    </button>
+    <button (click)="nextSlide()" class="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:text-exclusive transition-colors">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+      </svg>
+    </button>
+  </div>
+</div>
