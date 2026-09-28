@@ -1,0 +1,143 @@
+<div class="container py-10">
+
+  <!-- Breadcrumb -->
+  <div class="breadcrumb mb-12">
+    <a routerLink="/">Home</a>
+    <span>/</span>
+    <span class="active">Billing Details</span>
+  </div>
+
+  <div class="flex flex-col lg:flex-row gap-12">
+
+    <!-- ==================== BILLING FORM ==================== -->
+    <div class="flex-1">
+      <h2 class="text-xl font-semibold text-black mb-8 font-[Inter]">Billing Details</h2>
+
+      <form [formGroup]="checkoutForm" (ngSubmit)="onSubmit()" class="space-y-6">
+
+        <!-- City -->
+        <div>
+          <label class="block text-sm font-medium text-black mb-2">Town / City <span class="text-exclusive">*</span></label>
+          <input type="text" formControlName="city" placeholder="Your city"
+            class="w-full bg-[#f5f5f5] rounded px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-exclusive/20"/>
+          @if (cityCtrl.invalid && cityCtrl.touched) {
+            <p class="mt-1 text-xs text-exclusive">City is required</p>
+          }
+        </div>
+
+        <!-- Phone -->
+        <div>
+          <label class="block text-sm font-medium text-black mb-2">Phone Number <span class="text-exclusive">*</span></label>
+          <input type="tel" formControlName="phone" placeholder="01XXXXXXXXX"
+            class="w-full bg-[#f5f5f5] rounded px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-exclusive/20"/>
+          @if (phoneCtrl.invalid && phoneCtrl.touched) {
+            <p class="mt-1 text-xs text-exclusive">
+              @if (phoneCtrl.hasError('required')) { Phone is required }
+              @else { Invalid Egyptian phone number }
+            </p>
+          }
+        </div>
+
+        <!-- Address Details -->
+        <div>
+          <label class="block text-sm font-medium text-black mb-2">Street Address <span class="text-exclusive">*</span></label>
+          <input type="text" formControlName="details" placeholder="House number and street name"
+            class="w-full bg-[#f5f5f5] rounded px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-exclusive/20"/>
+          @if (detailsCtrl.invalid && detailsCtrl.touched) {
+            <p class="mt-1 text-xs text-exclusive">Street address is required</p>
+          }
+        </div>
+
+        <!-- Payment Method -->
+        <div>
+          <h3 class="text-sm font-semibold text-black mb-4">Payment Method</h3>
+          <div class="space-y-3">
+            <label class="flex items-center gap-3 cursor-pointer">
+              <input type="radio" name="payment" value="cash"
+                [checked]="paymentMethod() === 'cash'"
+                (change)="paymentMethod.set('cash')"
+                class="w-4 h-4 accent-exclusive"/>
+              <span class="text-sm">Cash on delivery</span>
+            </label>
+            <label class="flex items-center gap-3 cursor-pointer">
+              <input type="radio" name="payment" value="online"
+                [checked]="paymentMethod() === 'online'"
+                (change)="paymentMethod.set('online')"
+                class="w-4 h-4 accent-exclusive"/>
+              <span class="text-sm">Online Payment (Card)</span>
+              <div class="flex gap-1 ml-2">
+                <!-- Visa / MC icons -->
+                <svg class="w-10 h-6" viewBox="0 0 48 32" fill="none">
+                  <rect width="48" height="32" rx="4" fill="#1a1f71"/>
+                  <text x="7" y="22" font-size="14" font-weight="bold" fill="#f7b600" font-family="Arial">VISA</text>
+                </svg>
+              </div>
+            </label>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- ==================== ORDER SUMMARY ==================== -->
+    <div class="lg:w-96">
+      <h2 class="text-xl font-semibold text-black mb-8">Order Summary</h2>
+
+      @if (isCartLoading()) {
+        <div class="flex justify-center py-8">
+          <div class="animate-spin w-8 h-8 border-4 border-exclusive border-t-transparent rounded-full"></div>
+        </div>
+      } @else {
+        <div class="space-y-4 mb-6">
+          @for (item of cart()?.products; track item._id) {
+            <div class="flex items-center gap-4">
+              <div class="w-14 h-14 bg-[#f5f5f5] rounded flex items-center justify-center shrink-0">
+                <img [src]="item.product.imageCover" [alt]="item.product.title"
+                  class="w-12 h-12 object-contain"
+                  onerror="this.src='https://placehold.co/48x48/f5f5f5/ccc?text=P'"/>
+              </div>
+              <span class="text-sm text-gray-600 flex-1 truncate">{{ item.product.title }} &times;{{ item.count }}</span>
+              <span class="text-sm font-medium shrink-0">${{ item.price * item.count }}</span>
+            </div>
+          }
+        </div>
+
+        <div class="space-y-3 border-t border-gray-100 pt-4">
+          <div class="flex justify-between text-sm">
+            <span class="text-gray-600">Subtotal:</span>
+            <span class="font-medium">${{ getSubtotal() }}</span>
+          </div>
+          <div class="flex justify-between text-sm">
+            <span class="text-gray-600">Shipping:</span>
+            <span class="text-green-600 font-medium">Free</span>
+          </div>
+          <hr class="border-gray-100"/>
+          <div class="flex justify-between font-semibold">
+            <span>Total:</span>
+            <span>${{ getSubtotal() }}</span>
+          </div>
+        </div>
+      }
+
+      <!-- Place Order -->
+      <button (click)="onSubmit()" [disabled]="isLoading()"
+        class="btn-exclusive w-full text-center mt-6 py-3 text-base disabled:opacity-60">
+        @if (isLoading()) {
+          <span class="flex items-center justify-center gap-2">
+            <span class="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></span>
+            Processing...
+          </span>
+        } @else {
+          {{ paymentMethod() === 'online' ? 'Continue to Payment' : 'Place Order' }}
+        }
+      </button>
+
+      <!-- Security badges -->
+      <div class="flex items-center gap-2 justify-center mt-4 text-xs text-gray-400">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+        </svg>
+        Secure Checkout
+      </div>
+    </div>
+  </div>
+</div>

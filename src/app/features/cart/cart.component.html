@@ -1,0 +1,145 @@
+<div class="container py-10">
+
+  <!-- Breadcrumb -->
+  <div class="breadcrumb mb-12">
+    <a routerLink="/">Home</a>
+    <span>/</span>
+    <span class="active">Cart</span>
+  </div>
+
+  @if (isLoading()) {
+    <div class="flex justify-center py-20">
+      <div class="animate-spin w-10 h-10 border-4 border-exclusive border-t-transparent rounded-full"></div>
+    </div>
+  } @else if (!cart() || !cart()!.products || cart()!.products.length === 0) {
+    <!-- Empty Cart -->
+    <div class="text-center py-20">
+      <svg class="w-24 h-24 text-gray-200 mx-auto mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+      </svg>
+      <h2 class="text-2xl font-semibold text-black mb-3">Your cart is empty</h2>
+      <p class="text-gray-500 mb-8">Looks like you haven't added anything to your cart yet.</p>
+      <a routerLink="/shop" class="btn-exclusive">Return To Shop</a>
+    </div>
+  } @else {
+    <!-- Cart Table -->
+    <div class="overflow-x-auto mb-8">
+      <table class="w-full">
+        <thead>
+          <tr class="border-b border-gray-200">
+            <th class="text-left py-4 text-sm font-semibold text-black">Product</th>
+            <th class="text-left py-4 text-sm font-semibold text-black">Price</th>
+            <th class="text-left py-4 text-sm font-semibold text-black">Quantity</th>
+            <th class="text-left py-4 text-sm font-semibold text-black">Subtotal</th>
+            <th class="text-left py-4"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of cart()!.products; track item._id) {
+            <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+              <!-- Product -->
+              <td class="py-6">
+                <div class="flex items-center gap-4">
+                  <div class="w-16 h-16 bg-[#f5f5f5] rounded flex items-center justify-center shrink-0">
+                    <img [src]="item.product.imageCover" [alt]="item.product.title"
+                      class="w-14 h-14 object-contain"
+                      onerror="this.src='https://placehold.co/56x56/f5f5f5/ccc?text=P'"/>
+                  </div>
+                  <a [routerLink]="['/product', item.product._id]" class="text-sm font-medium text-black hover:text-exclusive transition-colors">
+                    {{ item.product.title }}
+                  </a>
+                </div>
+              </td>
+
+              <!-- Price -->
+              <td class="py-6 text-sm text-black">${{ item.price }}</td>
+
+              <!-- Quantity -->
+              <td class="py-6">
+                <div class="flex items-center border border-gray-200 rounded w-fit">
+                  <button (click)="updateQuantity(item.product._id!, item.count - 1)"
+                    class="qty-btn" [disabled]="isUpdating(item.product._id!)">-</button>
+                  <span class="px-4 py-1 text-sm font-medium min-w-[40px] text-center">
+                    {{ item.count }}
+                  </span>
+                  <button (click)="updateQuantity(item.product._id!, item.count + 1)"
+                    class="qty-btn" [disabled]="isUpdating(item.product._id!)">+</button>
+                </div>
+              </td>
+
+              <!-- Subtotal -->
+              <td class="py-6 text-sm font-semibold text-black">${{ item.price * item.count }}</td>
+
+              <!-- Remove -->
+              <td class="py-6">
+                <button (click)="removeItem(item.product._id!)"
+                  [disabled]="isUpdating(item.product._id!)"
+                  class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-exclusive hover:bg-red-50 rounded transition-colors">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                  </svg>
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Cart Actions Row -->
+    <div class="flex flex-wrap items-center justify-between gap-4 mb-10">
+      <a routerLink="/shop" class="px-8 py-3 border border-gray-300 rounded text-sm font-medium hover:border-exclusive hover:text-exclusive transition-colors">
+        Return To Shop
+      </a>
+      <button (click)="loadCart()" class="px-8 py-3 border border-gray-300 rounded text-sm font-medium hover:border-exclusive hover:text-exclusive transition-colors">
+        Update Cart
+      </button>
+    </div>
+
+    <!-- Bottom Section: Coupon + Total -->
+    <div class="flex flex-wrap gap-8 justify-between">
+      <!-- Coupon -->
+      <div class="flex items-center gap-4 flex-1 max-w-xs">
+        <input type="text"
+          placeholder="Coupon Code"
+          [ngModel]="couponCode()"
+          (ngModelChange)="couponCode.set($event)"
+          class="flex-1 border border-gray-300 rounded px-4 py-3 text-sm outline-none focus:border-exclusive"/>
+        <button (click)="applyCoupon()" [disabled]="isCouponLoading()"
+          class="btn-exclusive py-3 shrink-0">
+          {{ isCouponLoading() ? 'Applying...' : 'Apply Coupon' }}
+        </button>
+      </div>
+
+      <!-- Cart Total -->
+      <div class="border border-gray-200 rounded p-6 min-w-80">
+        <h3 class="text-lg font-semibold text-black mb-4">Cart Total</h3>
+        <div class="space-y-3">
+          <div class="flex justify-between text-sm">
+            <span class="text-gray-600">Subtotal:</span>
+            <span class="font-medium">${{ getOriginalTotal() }}</span>
+          </div>
+          @if (getSavings() > 0) {
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-600">Discount:</span>
+              <span class="text-exclusive font-medium">-${{ getSavings() }}</span>
+            </div>
+          }
+          <div class="flex justify-between text-sm">
+            <span class="text-gray-600">Shipping:</span>
+            <span class="text-green-600 font-medium">Free</span>
+          </div>
+          <hr class="border-gray-100"/>
+          <div class="flex justify-between font-semibold text-base">
+            <span>Total:</span>
+            <span>${{ getCartTotal() }}</span>
+          </div>
+        </div>
+        <a [routerLink]="['/checkout', cart()!._id]"
+          class="btn-exclusive w-full text-center block mt-6 py-3">
+          Proceed to Checkout
+        </a>
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,41 @@
+<div class="container py-10">
+
+  <div class="breadcrumb mb-10">
+    <a routerLink="/">Home</a>
+    <span>/</span>
+    <span class="active">Categories</span>
+  </div>
+
+  <div class="section-tag">
+    <div class="section-tag-bar"></div>
+    <span class="section-tag-text">Categories</span>
+  </div>
+  <h1 class="text-3xl font-bold text-black mb-10">Browse All Categories</h1>
+
+  @if (isLoading()) {
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+      @for (i of [1,2,3,4,5,6,7,8]; track i) {
+        <div class="skeleton h-48 rounded"></div>
+      }
+    </div>
+  } @else {
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+      @for (cat of categories(); track cat._id) {
+        <a [routerLink]="['/shop']" [queryParams]="{category: cat._id}"
+          class="group border border-gray-200 rounded overflow-hidden hover:border-exclusive hover:shadow-lg transition-all block">
+          <div class="h-40 overflow-hidden bg-[#f5f5f5]">
+            <img [src]="cat.image" [alt]="cat.name"
+              class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+              onerror="this.src='https://placehold.co/300x200/f5f5f5/ccc?text=Category'"/>
+          </div>
+          <div class="p-4 flex items-center justify-between">
+            <h3 class="font-semibold text-sm text-black group-hover:text-exclusive transition-colors">{{ cat.name }}</h3>
+            <svg class="w-4 h-4 text-gray-400 group-hover:text-exclusive transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </div>
+        </a>
+      }
+    </div>
+  }
+</div>
