@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProductsService } from '../../shared/services/products.service';
@@ -24,6 +24,7 @@ export class ShopComponent implements OnInit {
   authService = inject(AuthService);
   private toastr = inject(ToastrService);
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
 
   Math = Math;
 
@@ -106,7 +107,8 @@ export class ShopComponent implements OnInit {
   addToCart(productId: string, event: Event): void {
     event.preventDefault();
     if (!this.authService.isLoggedIn()) {
-      this.toastr.warning('Please login to add to cart', 'Login Required');
+      this.toastr.warning('Please create an account to add to cart', 'Login Required');
+      this.router.navigate(['/register']);
       return;
     }
     const ids = new Set(this.loadingCartIds());
@@ -125,10 +127,6 @@ export class ShopComponent implements OnInit {
 
   toggleWishlist(product: IProduct, event: Event): void {
     event.preventDefault();
-    if (!this.authService.isLoggedIn()) {
-      this.toastr.warning('Please login to use wishlist', 'Login Required');
-      return;
-    }
     const productId = product._id!;
     const ids = new Set(this.loadingWishlistIds());
     ids.add(productId);

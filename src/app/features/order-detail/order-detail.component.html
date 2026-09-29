@@ -1,0 +1,132 @@
+<div class="container py-10">
+
+  <!-- Breadcrumb -->
+  <div class="breadcrumb mb-10">
+    <a routerLink="/">Home</a>
+    <span>/</span>
+    <a routerLink="/orders">My Orders</a>
+    <span>/</span>
+    <span class="active">Order Details</span>
+  </div>
+
+  @if (isLoading()) {
+    <div class="flex justify-center py-20">
+      <div class="animate-spin w-12 h-12 border-4 border-exclusive border-t-transparent rounded-full"></div>
+    </div>
+  } @else if (loadError() || !order()) {
+    <div class="text-center py-20">
+      <h2 class="text-xl font-semibold mb-3">We couldn't find this order</h2>
+      <a routerLink="/orders" class="btn-exclusive">Back to My Orders</a>
+    </div>
+  } @else {
+    <div class="max-w-3xl mx-auto animate-fade-in-up">
+
+      <!-- Summary -->
+      <div class="flex flex-wrap items-center justify-between gap-6 mb-10">
+        <div>
+          <p class="text-xs text-gray-400 mb-0.5">Order ID</p>
+          <p class="font-semibold text-sm font-mono text-black break-all">{{ order()!._id }}</p>
+        </div>
+        <div>
+          <p class="text-xs text-gray-400 mb-0.5">Placed On</p>
+          <p class="text-sm text-black">{{ order()!.createdAt | date:'medium' }}</p>
+        </div>
+        <div>
+          <p class="text-xs text-gray-400 mb-0.5">Total</p>
+          <p class="text-sm font-semibold text-black">${{ order()!.totalOrderPrice }}</p>
+        </div>
+      </div>
+
+      <!-- Progress Tracker -->
+      <div class="border border-gray-200 rounded p-6 md:p-10 mb-8">
+        <div class="flex items-start">
+          <!-- Stage 1: Placed -->
+          <div class="flex flex-col items-center flex-1">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center bg-exclusive text-white shrink-0">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"/>
+              </svg>
+            </div>
+            <p class="text-xs font-semibold mt-3 text-black text-center">Order Placed</p>
+          </div>
+
+          <!-- Connector 1 (always full — the order exists) -->
+          <div class="h-1 mx-2 rounded-full bg-gray-200 relative overflow-hidden mt-6" style="flex: 1 1 0;">
+            <div class="absolute inset-y-0 left-0 bg-exclusive rounded-full transition-all duration-700" style="width: 100%;"></div>
+          </div>
+
+          <!-- Stage 2: On the way -->
+          <div class="flex flex-col items-center flex-1">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center bg-exclusive text-white shrink-0">
+              <svg class="w-6 h-6" [class.animate-truck]="!isDelivered()" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-8.635v8.635m0 0h-6M6 18.75H3.375c-.621 0-1.125-.504-1.125-1.125V15m0 0h9"/>
+              </svg>
+            </div>
+            <p class="text-xs font-semibold mt-3 text-black text-center">Out for Delivery</p>
+          </div>
+
+          <!-- Connector 2 (fills once delivered) -->
+          <div class="h-1 mx-2 rounded-full bg-gray-200 relative overflow-hidden mt-6" style="flex: 1 1 0;">
+            <div class="absolute inset-y-0 left-0 bg-exclusive rounded-full transition-all duration-700"
+              [style.width.%]="isDelivered() ? 100 : 0"></div>
+          </div>
+
+          <!-- Stage 3: Delivered -->
+          <div class="flex flex-col items-center flex-1">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center shrink-0 transition-colors duration-500"
+              [class.bg-exclusive]="isDelivered()" [class.text-white]="isDelivered()"
+              [class.bg-gray-100]="!isDelivered()" [class.text-gray-400]="!isDelivered()">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.5 12.75l6 6 9-13.5"/>
+              </svg>
+            </div>
+            <p class="text-xs font-semibold mt-3 text-center" [class.text-black]="isDelivered()" [class.text-gray-400]="!isDelivered()">Delivered</p>
+          </div>
+        </div>
+
+        <div class="text-center mt-10 pt-8 border-t border-gray-100">
+          @if (isDelivered()) {
+            <p class="text-green-600 font-semibold flex items-center justify-center gap-2 animate-scale-in">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              Order complete — thanks for shopping with us!
+            </p>
+          } @else {
+            <p class="text-gray-500 text-sm mb-4">Once your order arrives, let us know to complete it.</p>
+            <button (click)="markAsReceived()" class="btn-exclusive">I've Received My Order</button>
+          }
+        </div>
+      </div>
+
+      <!-- Items -->
+      <div class="border border-gray-200 rounded p-6 mb-6">
+        <h2 class="font-semibold mb-4">Items</h2>
+        <div class="space-y-4">
+          @for (item of order()!.cartItems; track item._id) {
+            <div class="flex items-center gap-4">
+              <div class="w-16 h-16 bg-[#f5f5f5] rounded flex items-center justify-center shrink-0">
+                <img [src]="item.product.imageCover" [alt]="item.product.title" class="w-14 h-14 object-contain"
+                  onerror="this.src='https://placehold.co/56x56/f5f5f5/ccc?text=P'"/>
+              </div>
+              <div class="flex-1">
+                <p class="text-sm font-medium text-black">{{ item.product.title }}</p>
+                <p class="text-xs text-gray-500 mt-0.5">Qty: {{ item.count }} × ${{ item.price }}</p>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      @if (order()!.shippingAddress) {
+        <div class="border border-gray-200 rounded p-6">
+          <h2 class="font-semibold mb-2">Shipping Address</h2>
+          <p class="text-sm text-gray-600">
+            {{ order()!.shippingAddress.details }}, {{ order()!.shippingAddress.city }} — {{ order()!.shippingAddress.phone }}
+          </p>
+        </div>
+      }
+    </div>
+  }
+
+</div>

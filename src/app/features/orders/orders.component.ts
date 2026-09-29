@@ -3,6 +3,7 @@ import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { OrdersService } from '../../core/services/orders.service';
 import { AuthService } from '../../core/services/auth.service';
+import { OrderTrackingService } from '../../core/services/order-tracking.service';
 import { IOrder } from '../../core/models/api.interface';
 
 @Component({
@@ -14,6 +15,7 @@ import { IOrder } from '../../core/models/api.interface';
 export class OrdersComponent implements OnInit {
   private ordersService = inject(OrdersService);
   private authService = inject(AuthService);
+  private orderTrackingService = inject(OrderTrackingService);
 
   orders = signal<IOrder[]>([]);
   isLoading = signal(true);
@@ -32,5 +34,9 @@ export class OrdersComponent implements OnInit {
       },
       error: () => this.isLoading.set(false),
     });
+  }
+
+  isDelivered(order: IOrder): boolean {
+    return order.isDelivered || this.orderTrackingService.isReceived(order._id);
   }
 }

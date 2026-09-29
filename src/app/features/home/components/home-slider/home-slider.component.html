@@ -1,13 +1,13 @@
 <div class="flex border-b border-gray-200">
   <!-- Left Category Sidebar -->
-  <div class="hidden lg:block w-64 shrink-0 border-r border-gray-200 py-4 pr-8">
-    <ul class="space-y-1">
+  <div class="hidden lg:block w-64 shrink-0 border-r border-gray-200 px-6 py-6">
+    <ul class="space-y-2">
       @for (cat of categories(); track cat._id) {
         <li>
           <a routerLink="/shop" [queryParams]="{category: cat._id}"
-            class="category-sidebar-item text-sm flex items-center justify-between py-2 text-gray-700 hover:text-exclusive cursor-pointer">
-            <span>{{ cat.name }}</span>
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            class="category-sidebar-item text-sm text-gray-700 hover:text-exclusive cursor-pointer">
+            <span class="truncate">{{ cat.name }}</span>
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
             </svg>
           </a>

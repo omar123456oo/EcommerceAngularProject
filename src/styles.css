@@ -248,9 +248,10 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 0;
+  gap: 16px;
+  padding: 12px 8px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 15px;
   color: #000;
   border-bottom: 1px solid transparent;
   transition: all 0.2s;
@@ -409,4 +410,137 @@
 .nav-underline-active {
   text-decoration: underline;
   text-underline-offset: 6px;
+}
+
+/* ==================== Motion / Animations ==================== */
+
+/* Respect users who've asked for less motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Scroll-triggered reveal (used with the appScrollReveal directive) */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.scroll-reveal.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Scroll-triggered reveal with staggered children (grids/rows of cards) */
+.scroll-reveal-grid > * {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1), transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.scroll-reveal-grid.in-view > * {
+  opacity: 1;
+  transform: translateY(0);
+}
+.scroll-reveal-grid.in-view > *:nth-child(1) { transition-delay: 0s; }
+.scroll-reveal-grid.in-view > *:nth-child(2) { transition-delay: 0.06s; }
+.scroll-reveal-grid.in-view > *:nth-child(3) { transition-delay: 0.12s; }
+.scroll-reveal-grid.in-view > *:nth-child(4) { transition-delay: 0.18s; }
+.scroll-reveal-grid.in-view > *:nth-child(5) { transition-delay: 0.24s; }
+.scroll-reveal-grid.in-view > *:nth-child(6) { transition-delay: 0.30s; }
+.scroll-reveal-grid.in-view > *:nth-child(7) { transition-delay: 0.36s; }
+.scroll-reveal-grid.in-view > *:nth-child(8) { transition-delay: 0.42s; }
+.scroll-reveal-grid.in-view > *:nth-child(9) { transition-delay: 0.48s; }
+.scroll-reveal-grid.in-view > *:nth-child(10) { transition-delay: 0.54s; }
+
+/* Generic fade/scale utilities for one-off use */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+.animate-scale-in {
+  animation: scaleIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Heart icon "pop" the moment a product is added to the wishlist */
+@keyframes heartPop {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.35); }
+  60% { transform: scale(0.92); }
+  100% { transform: scale(1); }
+}
+.animate-heart-pop {
+  animation: heartPop 0.4s ease;
+}
+
+/* In-transit truck icon on the order tracking stepper */
+@keyframes truckMove {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(3px); }
+}
+.animate-truck {
+  animation: truckMove 1s ease-in-out infinite;
+}
+
+/* Cart/wishlist count badge bump when the value changes */
+@keyframes badgeBump {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.35); }
+  100% { transform: scale(1); }
+}
+.animate-badge-bump {
+  animation: badgeBump 0.35s ease;
+}
+
+/* Tactile press feedback on the main interactive controls */
+.btn-exclusive,
+.qty-btn,
+.product-card-add-cart,
+.category-icon-card {
+  transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.btn-exclusive:active,
+.qty-btn:active,
+.product-card-add-cart:active {
+  transform: scale(0.96);
+}
+
+/* Product card hover lift */
+.product-card {
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease;
+}
+.product-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 32px -12px rgba(0, 0, 0, 0.18);
+}
+
+.category-icon-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px -8px rgba(219, 68, 68, 0.35);
+}
+
+/* Smoother cross-page transitions (Angular router withViewTransitions) */
+::view-transition-old(root) {
+  animation: 180ms cubic-bezier(0.4, 0, 1, 1) both view-transition-fade-out;
+}
+::view-transition-new(root) {
+  animation: 280ms cubic-bezier(0, 0, 0.2, 1) both view-transition-fade-in;
+}
+@keyframes view-transition-fade-out {
+  to { opacity: 0; }
+}
+@keyframes view-transition-fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }

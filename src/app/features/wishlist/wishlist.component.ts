@@ -1,8 +1,10 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { forkJoin } from 'rxjs';
 import { WishlistService } from '../../core/services/wishlist.service';
 import { CartService } from '../../core/services/cart.service';
+import { AuthService } from '../../core/services/auth.service';
 import { ToastrService } from 'ngx-toastr';
 import { IWishlistItem, IProduct } from '../../core/models/api.interface';
 import { ProductsService } from '../../shared/services/products.service';
@@ -17,7 +19,9 @@ export class WishlistComponent implements OnInit {
   private wishlistService = inject(WishlistService);
   private cartService = inject(CartService);
   private productsService = inject(ProductsService);
+  private authService = inject(AuthService);
   private toastr = inject(ToastrService);
+  private router = inject(Router);
 
   Math = Math;
   items = signal<IWishlistItem[]>([]);
@@ -46,6 +50,24 @@ export class WishlistComponent implements OnInit {
 
   loadWishlist(): void {
     this.isLoading.set(true);
+
+    if (!this.authService.isLoggedIn()) {
+      const ids = Array.from(this.wishlistService.wishlistIds());
+      if (ids.length === 0) {
+        this.items.set([]);
+        this.isLoading.set(false);
+        return;
+      }
+      forkJoin(ids.map((id) => this.productsService.getProductById(id))).subscribe({
+        next: (results) => {
+          this.items.set(results.map((r) => r.data));
+          this.isLoading.set(false);
+        },
+        error: () => this.isLoading.set(false),
+      });
+      return;
+    }
+
     this.wishlistService.getUserWishlist().subscribe({
       next: (res) => {
         this.items.set(res.data);
@@ -74,6 +96,11 @@ export class WishlistComponent implements OnInit {
   }
 
   addToCart(productId: string): void {
+    if (!this.authService.isLoggedIn()) {
+      this.toastr.warning('Please create an account to add to cart', 'Login Required');
+      this.router.navigate(['/register']);
+      return;
+    }
     const ids = new Set(this.loadingCartIds());
     ids.add(productId);
     this.loadingCartIds.set(ids);

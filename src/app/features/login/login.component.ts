@@ -48,7 +48,7 @@ export class LoginComponent {
         if (res.token) {
           this.authService.saveToken(res.token);
           this.cartService.loadCartCount();
-          this.wishlistService.loadWishlistIds();
+          this.wishlistService.mergeGuestWishlist();
           this.toastr.success('Welcome back!', 'Login Successful');
           this.router.navigate(['/']);
         }

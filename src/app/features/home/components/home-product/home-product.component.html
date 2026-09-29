@@ -1,7 +1,7 @@
 <div class="container py-10">
 
   <!-- ==================== FLASH SALES SECTION ==================== -->
-  <div class="mb-16">
+  <div class="mb-16 scroll-reveal" appScrollReveal>
     <!-- Section Tag -->
     <div class="section-tag">
       <div class="section-tag-bar"></div>
@@ -69,7 +69,7 @@
         }
       </div>
     } @else {
-      <div class="flex gap-6 overflow-x-auto pb-4 scroll-smooth no-scrollbar" #flashScroll>
+      <div class="flex gap-6 overflow-x-auto pb-4 scroll-smooth no-scrollbar scroll-reveal-grid" appScrollReveal #flashScroll>
         @for (product of flashProducts(); track product._id) {
           <a [routerLink]="['/product', product._id]" class="shrink-0 w-56 group block">
             <div class="product-card relative">
@@ -91,7 +91,8 @@
                   <button (click)="toggleWishlist(product, $event)"
                     class="w-9 h-9 bg-white rounded-full flex items-center justify-center shadow hover:bg-exclusive hover:text-white transition-all"
                     [class.bg-exclusive]="isInWishlist(product._id!)"
-                    [class.text-white]="isInWishlist(product._id!)">
+                    [class.text-white]="isInWishlist(product._id!)"
+                    [class.animate-heart-pop]="isInWishlist(product._id!)">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                       [class.fill-current]="isInWishlist(product._id!)">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
@@ -149,7 +150,7 @@
   <hr class="border-gray-200 mb-16">
 
   <!-- ==================== BROWSE BY CATEGORY ==================== -->
-  <div class="mb-16">
+  <div class="mb-16 scroll-reveal" appScrollReveal>
     <div class="section-tag">
       <div class="section-tag-bar"></div>
       <span class="section-tag-text">Categories</span>
@@ -172,7 +173,7 @@
     </div>
 
     <!-- Category Cards -->
-    <div class="flex gap-4 overflow-x-auto pb-2 no-scrollbar" #catScroll>
+    <div class="flex gap-4 overflow-x-auto pb-2 no-scrollbar scroll-reveal-grid" appScrollReveal #catScroll>
       @for (cat of categories(); track cat._id; let i = $index) {
         <a [routerLink]="['/shop']" [queryParams]="{category: cat._id}"
           class="category-icon-card shrink-0 group"
@@ -197,7 +198,7 @@
   <hr class="border-gray-200 mb-16">
 
   <!-- ==================== BEST SELLING PRODUCTS ==================== -->
-  <div class="mb-16">
+  <div class="mb-16 scroll-reveal" appScrollReveal>
     <div class="section-tag">
       <div class="section-tag-bar"></div>
       <span class="section-tag-text">This Month</span>
@@ -209,7 +210,7 @@
     </div>
 
     <!-- Best Selling Grid (4 cards) -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 scroll-reveal-grid" appScrollReveal>
       @for (product of bestSellingProducts(); track product._id) {
         <a [routerLink]="['/product', product._id]" class="group block">
           <div class="product-card relative">
@@ -221,7 +222,8 @@
                 <button (click)="toggleWishlist(product, $event)"
                   class="w-9 h-9 bg-white rounded-full flex items-center justify-center shadow hover:bg-exclusive hover:text-white transition-all"
                   [class.bg-exclusive]="isInWishlist(product._id!)"
-                  [class.text-white]="isInWishlist(product._id!)">
+                  [class.text-white]="isInWishlist(product._id!)"
+                  [class.animate-heart-pop]="isInWishlist(product._id!)">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                     [class.fill-current]="isInWishlist(product._id!)">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
@@ -261,7 +263,7 @@
   </div>
 
   <!-- ==================== PROMO BANNER ==================== -->
-  <div class="bg-black rounded text-white flex flex-col md:flex-row items-center justify-between p-10 mb-16 relative overflow-hidden">
+  <div class="bg-black rounded text-white flex flex-col md:flex-row items-center justify-between p-10 mb-16 relative overflow-hidden scroll-reveal" appScrollReveal>
     <div class="max-w-sm z-10">
       <p class="text-green-400 text-sm font-semibold mb-2">Categories</p>
       <h2 class="text-4xl font-bold leading-tight mb-6 font-[Inter]">Enhance Your<br>Music Experience</h2>
@@ -282,7 +284,7 @@
   </div>
 
   <!-- ==================== EXPLORE OUR PRODUCTS ==================== -->
-  <div class="mb-16">
+  <div class="mb-16 scroll-reveal" appScrollReveal>
     <div class="section-tag">
       <div class="section-tag-bar"></div>
       <span class="section-tag-text">Our Products</span>
@@ -305,7 +307,7 @@
     </div>
 
     <!-- Products Grid 4x2 -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 scroll-reveal-grid" appScrollReveal>
       @for (product of exploreProducts(); track product._id) {
         <a [routerLink]="['/product', product._id]" class="group block">
           <div class="product-card relative">
@@ -324,7 +326,8 @@
                 <button (click)="toggleWishlist(product, $event)"
                   class="w-9 h-9 bg-white rounded-full flex items-center justify-center shadow hover:bg-exclusive hover:text-white transition-all"
                   [class.bg-exclusive]="isInWishlist(product._id!)"
-                  [class.text-white]="isInWishlist(product._id!)">
+                  [class.text-white]="isInWishlist(product._id!)"
+                  [class.animate-heart-pop]="isInWishlist(product._id!)">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
                   </svg>
@@ -376,7 +379,7 @@
   </div>
 
   <!-- ==================== NEW ARRIVAL ==================== -->
-  <div class="mb-16">
+  <div class="mb-16 scroll-reveal" appScrollReveal>
     <div class="section-tag">
       <div class="section-tag-bar"></div>
       <span class="section-tag-text">Featured</span>
@@ -436,7 +439,7 @@
   </div>
 
   <!-- ==================== SERVICE BADGES ==================== -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 scroll-reveal-grid" appScrollReveal>
     <div class="text-center">
       <div class="w-16 h-16 border-2 border-black rounded-full flex items-center justify-center mx-auto mb-4">
         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">

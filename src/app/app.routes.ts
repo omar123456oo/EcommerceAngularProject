@@ -48,7 +48,6 @@ export const routes: Routes = [
       import('./features/wishlist/wishlist.component').then(
         (f) => f.WishlistComponent
       ),
-    canActivate: [authGuard],
   },
   {
     path: 'cart',
@@ -76,6 +75,14 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/orders/orders.component').then(
         (f) => f.OrdersComponent
+      ),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'orders/:id',
+    loadComponent: () =>
+      import('./features/order-detail/order-detail.component').then(
+        (f) => f.OrderDetailComponent
       ),
     canActivate: [authGuard],
   },

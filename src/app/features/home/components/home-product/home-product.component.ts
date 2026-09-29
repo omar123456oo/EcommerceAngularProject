@@ -8,12 +8,13 @@ import { CartService } from '../../../../core/services/cart.service';
 import { WishlistService } from '../../../../core/services/wishlist.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { ToastrService } from 'ngx-toastr';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { ScrollRevealDirective } from '../../../../shared/directives/scroll-reveal.directive';
 
 @Component({
   selector: 'app-home-product',
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, ScrollRevealDirective],
   templateUrl: './home-product.component.html',
   styleUrl: './home-product.component.css',
 })
@@ -25,6 +26,7 @@ export class HomeProductComponent implements OnInit, OnDestroy {
   private wishlistService = inject(WishlistService);
   authService = inject(AuthService);
   private toastr = inject(ToastrService);
+  private router = inject(Router);
 
   @ViewChild('flashScroll') flashScrollRef!: ElementRef;
   @ViewChild('catScroll') catScrollRef!: ElementRef;
@@ -127,7 +129,8 @@ export class HomeProductComponent implements OnInit, OnDestroy {
     event.preventDefault();
     event.stopPropagation();
     if (!this.authService.isLoggedIn()) {
-      this.toastr.warning('Please login to add to cart', 'Login Required');
+      this.toastr.warning('Please create an account to add to cart', 'Login Required');
+      this.router.navigate(['/register']);
       return;
     }
     const ids = new Set(this.loadingCartIds());
@@ -148,10 +151,6 @@ export class HomeProductComponent implements OnInit, OnDestroy {
   toggleWishlist(product: IProduct, event: Event): void {
     event.preventDefault();
     event.stopPropagation();
-    if (!this.authService.isLoggedIn()) {
-      this.toastr.warning('Please login to use wishlist', 'Login Required');
-      return;
-    }
     const productId = product._id!;
     if (this.wishlistService.isInWishlist(productId)) {
       this.wishlistService.removeFromWishlist(productId).subscribe({

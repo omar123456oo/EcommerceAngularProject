@@ -54,12 +54,17 @@
             <div>
               <p class="text-xs text-gray-400 mb-0.5">Delivery</p>
               <span class="px-3 py-1 text-xs font-semibold rounded-full"
-                [class.bg-green-100]="order.isDelivered"
-                [class.text-green-700]="order.isDelivered"
-                [class.bg-blue-100]="!order.isDelivered"
-                [class.text-blue-700]="!order.isDelivered">
-                {{ order.isDelivered ? 'Delivered' : 'On The Way' }}
+                [class.bg-green-100]="isDelivered(order)"
+                [class.text-green-700]="isDelivered(order)"
+                [class.bg-blue-100]="!isDelivered(order)"
+                [class.text-blue-700]="!isDelivered(order)">
+                {{ isDelivered(order) ? 'Completed' : 'On The Way' }}
               </span>
+            </div>
+            <div>
+              <a [routerLink]="['/orders', order._id]" class="px-4 py-2 border border-gray-300 rounded text-xs font-semibold hover:border-exclusive hover:text-exclusive transition-colors">
+                Track Order
+              </a>
             </div>
           </div>
 

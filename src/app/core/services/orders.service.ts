@@ -24,8 +24,9 @@ export class OrdersService {
     cartId: string,
     shippingAddress: IShippingAddress
   ): Observable<any> {
+    const returnUrl = `${window.location.origin}/?paymentSuccess=true`;
     return this.http.post(
-      `${environment.baseUrl}/orders/checkout-session/${cartId}?url=http://localhost:4200`,
+      `${environment.baseUrl}/orders/checkout-session/${cartId}?url=${encodeURIComponent(returnUrl)}`,
       { shippingAddress }
     );
   }
